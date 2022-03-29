@@ -1,0 +1,11 @@
+[
+    {
+        "id": 3,
+        "book_id": 1,
+        "anonymous_user": "user_4uasgfeh",
+        "comment": "This is a test comment and am just gonna do some blah blah blah. Gotcha",
+        "comment_parent": null,
+        "created_at": "2022-03-27T22:17:11.000000Z",
+        "updated_at": "2022-03-27T22:17:11.000000Z"
+    }
+]

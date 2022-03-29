@@ -1,0 +1,4 @@
+/mysql
+/conf/nginx.conf
+/web/.env
+docker-compose.yml
