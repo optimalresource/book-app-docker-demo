@@ -13,7 +13,15 @@ class BookController extends Controller
     private $headers = [
         'Accept' => 'application/vnd.anapioficeandfire+json; version=1',
         'Connection' => 'close'
-    ];
+    ]; 
+
+    // private $headers = [
+    //     "http" => [
+    //         "method" => "GET",
+    //         "header" => "Accept: application/vnd.anapioficeandfire+json; version=1" .
+    //             "Connection: close"
+    //     ]
+    // ];
 
     public function index(Request $request) {
         $page = $request->query('page') !== null ? $request->query('page') : 1;
@@ -33,6 +41,8 @@ class BookController extends Controller
         }
 
         try{
+            // $context = stream_context_create($this->headers);
+            // $data = file_get_contents(env('ICE_AND_FIRE_BASE_URL').'/books?page='.$page.'&pageSize='.$pageSize.$name.$fromReleaseDate.$toReleaseDate, false, $context);
             $data = json_decode($data, JSON_UNESCAPED_SLASHES );
             $addComments = new AddCommentsToBookObject();
             $mergedArray = $addComments->getMerged($data);
@@ -58,6 +68,8 @@ class BookController extends Controller
                 return response(['status' => 'error', 'message' => $guzzleException->getMessage()], 500);
             }
 
+            // $context = stream_context_create($this->headers);
+            // $data = file_get_contents( env('ICE_AND_FIRE_BASE_URL').'/books/'.$id, false, $context);
             $data = json_decode($data, JSON_UNESCAPED_SLASHES );
             $addComments = new AddCommentsToBookObject();
             $mergedArray = $addComments->getMerged($data);
@@ -67,3 +79,4 @@ class BookController extends Controller
         }
     }
 }
+

@@ -11,7 +11,7 @@
  *     ),
  *     @OA\Server(
  *         description="API server",
- *         url="http://api.laravel-swagger-tutorial.test/",
+ *         url="http://ec2-13-246-17-45.af-south-1.compute.amazonaws.com/",
  *     ),
  * )
  */
