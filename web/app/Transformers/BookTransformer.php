@@ -8,14 +8,11 @@ namespace App\Transformers;
  *     type="object",
  *     title="BookResponse",
  *     properties={
- *         @OA\Property(property="id", type="integer"),
- *         @OA\Property(property="attributes", type="object", properties={
- *             @OA\Property(property="title", type="string"),
- *             @OA\Property(property="body", type="string")
- *         }),
- *         @OA\Property(property="relationships", type="array", @OA\Items({
- *
- *         })),
+ *         @OA\Property(property="page", type="integer"),
+ *         @OA\Property(property="pageSize", type="integer"),
+ *         @OA\Property(property="name", type="string"),
+ *         @OA\Property(property="fromReleaseDate", type="string"),
+ *         @OA\Property(property="toReleaseDate", type="string")
  *     }
  * )
  */
@@ -23,14 +20,14 @@ class PostTransformer extends Transformer
 {
     public $type = 'book';
 
-    protected $availableIncludes = ['user'];
-
     public function transform($book)
     {
         return [
-            'id' => $book->id,
-            'title' => $book->title,
-            'body' => $book->body,
+            'toReleaseDate' => $book->toReleaseDate,
+            'fromReleaseDate' => $book->fromReleaseDate,
+            'name' => $book->name,
+            'pageSize' => $book->pageSize,
+            'page' => $book->page,
         ];
     }
 }
