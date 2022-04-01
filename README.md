@@ -4,7 +4,7 @@ This is a small set of rest API endpoints using PHP(Lumen) that can be used for 
 
 The following technologies were used; - API endpoints are built using Laravel/Lumen. - Database is powered by MySQL. - NGINX serves the application. - Docker is used as a container service to house the whole system. - AWS ECR was used to host the docker image. - AWS EC2 instance was used to host the docker application on the cloud.
 
-Services to be added: - Rabbitmq - Redis
+Services to be added: - Rabbitmq
 
 To launch the docker service
 - Edit the sample.docker-compose.yml file and put the MySQL configuration of your choice.
