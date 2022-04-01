@@ -21,29 +21,29 @@ class CommentController extends Controller
 
             return response()->json($comments);
         }catch (\Exception $e) {
-            return response(['status' =>'failed', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
     public static function getComments($book_id) {
         try {
             if ($book_id === null) {
-                return ['status' => 'error', 'message' => 'Please supply the book_id parameter, it cannot be empty or null'];
+                return response('Please supply the book_id parameter, it cannot be empty or null', 400);
             }
 
             $book_id = strip_tags($book_id);
             $comments = Comment::where('book_id', '=', $book_id)->get();
 
-            return ['status' => 'success', 'response' => $comments];
+            return response($comments);
         }catch (\Exception $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            return response("A server error occured", 500);
         }
     }
 
     public function store(Request $request) {
         try{
             if(empty($request->input('book_id')) OR empty($request->input('comment'))){
-                return response(['status' => 'error', 'message' => 'Book ID and comment cannot be empty'], 404);
+                return response('Book ID and comment cannot be empty', 400);
             }
 
             $comment = strip_tags($request->input('comment'));
@@ -52,19 +52,19 @@ class CommentController extends Controller
 
             if($comment_parent !== null) {
                 if(!(Comment::where('id', '=', $comment_parent)->exists())){
-                    return response(['status' => 'error', 'message' => 'Your cannot comment under a non existing comment'], 404);
+                    return response('Your cannot comment under a non existing comment', 400);
                 }
             }
 
             if(strlen($comment) > 500){
-                return response(['status' => 'error', 'message' => 'Your comment cannot exceed 500 characters'], 400);
+                return response('Your comment cannot exceed 500 characters', 400);
             }
 
             $client = new Client();
             $res = $client->request('GET', 'https://www.anapioficeandfire.com/api/books/'.$book_id);
 
             if($res->getStatusCode() == 404) {
-                return response(['status' => 'error', 'message' => 'You cannot comment on a book that does not exist'], 404);
+                return response('You cannot comment on a book that does not exist', 400);
             }
 
             $new_comment = new Comment();
@@ -74,21 +74,21 @@ class CommentController extends Controller
             $anonymous_user = $this->generateAnonymousUser($request->ip());
 
             if($anonymous_user == 'failed') {
-                return response(['status' => 'error', 'message' => 'Oops, some error occurred'], 500);
+                return response("A server error occured", 500);
             }
 
             if($this->checkDuplicateComment($comment, $request->ip(), $book_id)) {
-                return response(['status' => 'error', 'message' => 'You cannot comment the same thing twice'], 400);
+                return response('You cannot comment the same thing twice', 400);
             }
 
             $new_comment->anonymous_user = $anonymous_user;
             $new_comment->comment_parent = $comment_parent;
 
             if($new_comment->save()){
-                return response()->json(['status' =>'success', 'message' => 'Comment saved successfully']);
+                return response()->json($new_comment);
             }
         }catch(\Exception $e){
-            return response(['status' =>'failed', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
@@ -121,30 +121,30 @@ class CommentController extends Controller
             $comment = Comment::findOrFail($id);
 
             if (empty($request->input('comment'))) {
-                return response(['status' => 'error', 'message' => 'Comment cannot be empty'], 404);
+                return response('Comment cannot be empty', 400);
             }
 
             if ($request->ip() != $comment->commenter_ip) {
-                return response(['status' => 'error', 'message' => 'You are unauthorized, cannot edit another user\'s comment'], 401);
+                return response('You are unauthorized, cannot edit another user\'s comment', 401);
             }
 
             $new_comment = strip_tags($request->input('comment'));
 
             if (strlen($new_comment) > 500) {
-                return response(['status' => 'error', 'message' => 'Your comment cannot exceed 500 characters'], 400);
+                return response('Your comment cannot exceed 500 characters', 400);
             }
 
             $comment->comment = $new_comment;
 
             if($this->checkDuplicateComment($new_comment, $request->ip(), $comment->book_id, $id)) {
-                return response(['status' => 'error', 'message' => 'You cannot comment the same thing twice for one book'], 400);
+                return response('You cannot comment the same thing twice for one book', 400);
             }
 
             if ($comment->save()) {
-                return response()->json(['status' => 'success', 'message' => 'Comment edited successfully']);
+                return response()->json($comment);
             }
         }catch (\Exception $e) {
-            return response(['status' =>'failed', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
@@ -153,14 +153,14 @@ class CommentController extends Controller
             $comment = Comment::findOrFail($id);
 
             if ($request->ip() != $comment->commenter_ip) {
-                return response(['status' => 'error', 'message' => 'You are unauthorized, cannot delete another user\'s comment'], 401);
+                return response('You are unauthorized, cannot delete another user\'s comment', 401);
             }
 
             if ($comment->delete()) {
-                return response()->json(['status' => 'success', 'message' => 'Comment deleted successfully']);
+                return response()->json('Comment deleted successfully');
             }
         }catch (\Exception $e) {
-            return response(['status' =>'failed', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
@@ -169,7 +169,7 @@ class CommentController extends Controller
             $comment = Comment::findOrFail($id);
             return response()->json($comment);
         }catch (\Exception $e) {
-            return response(['status' =>'failed', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 }

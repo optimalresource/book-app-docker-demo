@@ -93,7 +93,7 @@
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "A server error occured"
                     }
                 }
             }
@@ -125,8 +125,11 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Please supply the book id, integer is required"
+                    },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "A server error occured"
                     }
                 }
             }
@@ -159,8 +162,11 @@
                             }
                         }
                     },
+                    "400": {
+                        "description": "Please supply the book_id parameter, it cannot be empty or null"
+                    },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "A server error occured"
                     }
                 }
             },
@@ -202,15 +208,15 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/PostComment"
+                                "$ref": "#/definitions/Comment"
                             }
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Book ID and comment cannot be empty"
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "A server error occured"
                     }
                 }
             }
@@ -243,7 +249,7 @@
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "A server error occured"
                     }
                 }
             },
@@ -277,15 +283,18 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/PutComment"
+                                "$ref": "#/definitions/Comment"
                             }
                         }
                     },
                     "400": {
-                        "description": "Bad request"
+                        "description": "Comment cannot be empty"
+                    },
+                    "401": {
+                        "description": "You are unauthorized, cannot edit another user's comment"
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "A server error occured"
                     }
                 }
             },
@@ -307,19 +316,13 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Successful response",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/DeleteComment"
-                            }
-                        }
+                        "description": "Comment deleted successfully"
                     },
-                    "400": {
-                        "description": "Bad request"
+                    "401": {
+                        "description": "You are unauthorized, cannot delete another user's comment"
                     },
                     "500": {
-                        "description": "Internal server error"
+                        "description": "A server error occured"
                     }
                 }
             }
@@ -377,12 +380,12 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/Character"
+                                "$ref": "#/definitions/Characters"
                             }
                         }
                     },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": "A server error occured"
                     }
                 }
             }
@@ -582,6 +585,22 @@
                 }
             }
         },
+        "Characters": {
+            "type": "object",
+            "properties": {
+                "response": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/Character"
+                    }
+                },
+                "total_characters": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
+                }
+            }
+        },
         "Comment": {
             "type": "object",
             "properties": {
@@ -614,45 +633,6 @@
                 "updated_at": {
                     "type": "string",
                     "example": "2022-03-30T14:54:18.000000Z"
-                }
-            }
-        },
-        "PostComment": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "success"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Comment saved successfully"
-                }
-            }
-        },
-        "PutComment": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "success"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Comment edited successfully"
-                }
-            }
-        },
-        "DeleteComment": {
-            "type": "object",
-            "properties": {
-                "status": {
-                    "type": "string",
-                    "example": "success"
-                },
-                "message": {
-                    "type": "string",
-                    "example": "Comment deleted successfully"
                 }
             }
         }

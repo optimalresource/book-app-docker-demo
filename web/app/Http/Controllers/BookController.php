@@ -37,7 +37,8 @@ class BookController extends Controller
             ]);
             $data = $res->getBody()->getContents();
         }catch(GuzzleException $guzzleException) {
-            return response(['status' => 'error', 'message' => $guzzleException->getMessage()], 500);
+            // return response(['status' => 'error', 'message' => $guzzleException->getMessage()], 500);
+            return response("A server error occured", 500);
         }
 
         try{
@@ -48,14 +49,14 @@ class BookController extends Controller
             $mergedArray = $addComments->getMerged($data);
             return json_decode($mergedArray, JSON_UNESCAPED_SLASHES );
         }catch(\Exception $e) {
-            return response(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
     public function show($id) {
         try {
             if ($id === null OR is_nan($id)) {
-                return ['status' => 'error', 'message' => 'Please supply the book id, integer is required'];
+                return response('Please supply the book id, integer is required', 400);
             }
 
             try{
@@ -65,7 +66,7 @@ class BookController extends Controller
                 ]);
                 $data = $res->getBody()->getContents();
             }catch(GuzzleException $guzzleException) {
-                return response(['status' => 'error', 'message' => $guzzleException->getMessage()], 500);
+                return response("A server error occured", 500);
             }
 
             // $context = stream_context_create($this->headers);
@@ -75,7 +76,7 @@ class BookController extends Controller
             $mergedArray = $addComments->getMerged($data);
             return json_decode($mergedArray, JSON_UNESCAPED_SLASHES );
         }catch (\Exception $e) {
-            return ['status' => 'error', 'message' => $e->getMessage()];
+            return response("A server error occured", 500);
         }
     }
 }

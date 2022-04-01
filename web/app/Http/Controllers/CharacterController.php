@@ -29,16 +29,16 @@ class CharacterController extends Controller
             ]);
             $data = $res->getBody()->getContents();
         }catch(GuzzleException $guzzleException) {
-            return response(['status' => 'error', 'message' => $guzzleException->getMessage()], 500);
+            return response("A server error occured", 500);
         }
 
         try{
             $data = json_decode($data, JSON_UNESCAPED_SLASHES );
             $total = count($data);
             $sortedCharacters = $this->makeSort($data, $order);
-            return ['response' => json_decode($sortedCharacters, JSON_UNESCAPED_SLASHES ), 'total_characters' => $total];
+            return response(['response' => json_decode($sortedCharacters, JSON_UNESCAPED_SLASHES ), 'total_characters' => $total]);
         }catch(\Exception $e) {
-            return response(['status' => 'error', 'message' => $e->getMessage()], 500);
+            return response("A server error occured", 500);
         }
     }
 
