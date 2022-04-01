@@ -1,396 +1,664 @@
 {
-  "swagger": "2.0",
-  "info": {
-    "description": "This is a small set of rest API endpoints using PHP(Lumen) that can be used for listing the names of books along with their authors and comment count, adding and listing anonymous comments for a book, and getting the character list for a book.",
-    "version": "1.0.0",
-    "title": "Book, Characters & Comments API",
-    "termsOfService": "http://landearn.com",
-    "contact": {
-      "email": "joseph@landearn.com"
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a small set of rest API endpoints using PHP(Lumen) that can be used for listing the names of books along with their authors and comment count, adding and listing anonymous comments for a book, and getting the character list for a book.",
+        "version": "1.0.0",
+        "title": "Book, Characters & Comments API",
+        "termsOfService": "http://landearn.com",
+        "contact": {
+            "email": "joseph@landearn.com"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        }
     },
-    "license": {
-      "name": "Apache 2.0",
-      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    "host": "ec2-13-246-17-45.af-south-1.compute.amazonaws.com",
+    "basePath": "/api/v1",
+    "tags": [
+        {
+            "name": "books",
+            "description": "Every books on ice and fire",
+            "externalDocs": {
+                "description": "Find out more",
+                "url": "http://landearn.com"
+            }
+        },
+        {
+            "name": "characters",
+            "description": "Every characters in books"
+        },
+        {
+            "name": "comments",
+            "description": "Comments made on books"
+        }
+    ],
+    "schemes": ["http"],
+    "paths": {
+        "/books": {
+            "get": {
+                "tags": ["books"],
+                "summary": "Get all books",
+                "description": "Use filters 'page' and 'pagesize' for paginated response. Also use 'name', 'fromReleaseDate' and 'toReleaseDate' to filter records. \n \n Example: /books/?page=1&pageSize=3",
+                "operationId": "getBooks",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Book name (Please put exact name)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "fromReleaseDate",
+                        "in": "query",
+                        "description": "Book release date to filter from",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "toReleaseDate",
+                        "in": "query",
+                        "description": "Book release date to filter to",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Book"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/books/{id}": {
+            "get": {
+                "tags": ["books"],
+                "summary": "Get all books",
+                "description": "This endpoint helps you get a single book details, you only need supply the id of the book to the url path",
+                "operationId": "getBook",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Book id",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Book"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/comments": {
+            "get": {
+                "tags": ["comments"],
+                "summary": "Get all comments made for a book",
+                "description": "Supply the 'book_id' parameter in the url to see all comments made for a book",
+                "operationId": "getComments",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "book_id",
+                        "in": "query",
+                        "description": "Book id",
+                        "required": true,
+                        "type": "integer",
+                        "collectionFormat": "multi"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Comment"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "tags": ["comments"],
+                "summary": "Post a new comment for a book",
+                "description": "Submit a new comment using form data",
+                "operationId": "postComment",
+                "consumes": ["application/x-www-form-urlencoded"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "book_id",
+                        "in": "formData",
+                        "description": "ID of book that owns the comment",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "comment",
+                        "in": "formData",
+                        "description": "Comment made by anonymous user",
+                        "required": true,
+                        "type": "string"
+                    },
+                    {
+                        "name": "comment_parent",
+                        "in": "formData",
+                        "description": "ID of the parent comment for replies under a comment",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PostComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/comments/{id}": {
+            "get": {
+                "tags": ["comments"],
+                "summary": "Get a single comment",
+                "description": "This endpoint helps you get a single comment details, you only need supply the id of the comment to the url path",
+                "operationId": "getComment",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "type": "integer"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Comment"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "put": {
+                "tags": ["comments"],
+                "summary": "Edit a comment",
+                "description": "Edit an existing comment using form data",
+                "operationId": "editComment",
+                "consumes": ["application/x-www-form-urlencoded"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "comment",
+                        "in": "formData",
+                        "description": "Edited Comment made by anonymous user",
+                        "required": true,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/PutComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            },
+            "delete": {
+                "tags": ["comments"],
+                "summary": "Delete a comment",
+                "description": "Delete an existing comment using form data",
+                "operationId": "deleteComment",
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Comment ID",
+                        "required": true,
+                        "type": "integer",
+                        "format": "int64"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful response",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/DeleteComment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
+        "/characters": {
+            "get": {
+                "tags": ["characters"],
+                "summary": "Get all characters",
+                "description": "Use filters 'page' and 'pagesize' for paginated response. Also use 'name', 'gender', 'age' to filter your resonse and 'order' paramter with values 'asc' or 'desc' to sort the characters. \n \n Example: /characters/?order=asc \n \n The sort is done using the names of the characters",
+                "operationId": "getCharacters",
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "pageSize",
+                        "in": "query",
+                        "description": "Page size",
+                        "required": false,
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    {
+                        "name": "name",
+                        "in": "query",
+                        "description": "Character name (Please put exact name)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "gender",
+                        "in": "query",
+                        "description": "Character gender (Male or Female)",
+                        "required": false,
+                        "type": "string"
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Order of sorting (asc or desc)",
+                        "required": false,
+                        "type": "string"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/Character"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "Book": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://www.anapioficeandfire.com/api/books/12"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "A Knight of the Seven Kingdoms"
+                },
+                "isbn": {
+                    "type": "string",
+                    "example": "978-0345533487"
+                },
+                "authors": {
+                    "type": "array",
+                    "xml": {
+                        "name": "author",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "George R. R. Martin"
+                    }
+                },
+                "numberOfPages": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 368
+                },
+                "publisher": {
+                    "type": "string",
+                    "example": "Bantam Books"
+                },
+                "country": {
+                    "type": "string",
+                    "example": "United States"
+                },
+                "mediaType": {
+                    "type": "string",
+                    "example": "Hardcover"
+                },
+                "released": {
+                    "type": "string",
+                    "example": "2015-10-06T00:00:00"
+                },
+                "characters": {
+                    "type": "array",
+                    "xml": {
+                        "name": "character",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "https://www.anapioficeandfire.com/api/characters/2138"
+                    }
+                },
+                "povCharacters": {
+                    "type": "array",
+                    "xml": {
+                        "name": "character",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "https://www.anapioficeandfire.com/api/characters/2075"
+                    }
+                },
+                "comments_count": {
+                    "type": "integer",
+                    "format": "int64"
+                }
+            }
+        },
+        "Character": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string",
+                    "example": "https://www.anapioficeandfire.com/api/books/12"
+                },
+                "name": {
+                    "type": "string",
+                    "example": "A Knight of the Seven Kingdoms"
+                },
+                "gender": {
+                    "type": "string",
+                    "example": "Female"
+                },
+                "culture": {
+                    "type": "string",
+                    "example": "Braavosi"
+                },
+                "born": {
+                    "type": "string",
+                    "example": "In 263 AC or 264 AC"
+                },
+                "died": {
+                    "type": "string",
+                    "example": "In 290 AC or 292 AC"
+                },
+                "titles": {
+                    "type": "array",
+                    "xml": {
+                        "name": "title",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "Ser"
+                    }
+                },
+                "aliases": {
+                    "type": "array",
+                    "xml": {
+                        "name": "aliases",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "Addam of Hull"
+                    }
+                },
+                "father": {
+                    "type": "string",
+                    "example": "https://www.anapioficeandfire.com/api/characters/59"
+                },
+                "mother": {
+                    "type": "string",
+                    "example": "https://www.anapioficeandfire.com/api/characters/59"
+                },
+                "spouse": {
+                    "type": "string",
+                    "example": "https://www.anapioficeandfire.com/api/characters/2071"
+                },
+                "allegiances": {
+                    "type": "array",
+                    "xml": {
+                        "name": "allegiance",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "https://www.anapioficeandfire.com/api/houses/378"
+                    }
+                },
+                "books": {
+                    "type": "array",
+                    "xml": {
+                        "name": "book",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": "https://www.anapioficeandfire.com/api/books/1"
+                    }
+                },
+                "povBooks": {
+                    "type": "array",
+                    "xml": {
+                        "name": "povBook",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": ""
+                    }
+                },
+                "tvSeries": {
+                    "type": "array",
+                    "xml": {
+                        "name": "povBook",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": ""
+                    }
+                },
+                "playedBy": {
+                    "type": "array",
+                    "xml": {
+                        "name": "playedBy",
+                        "wrapped": true
+                    },
+                    "items": {
+                        "type": "string",
+                        "example": ""
+                    }
+                }
+            }
+        },
+        "Comment": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
+                },
+                "book_id": {
+                    "type": "integer",
+                    "format": "int64",
+                    "example": 1
+                },
+                "anonymous_user": {
+                    "type": "string",
+                    "example": "user_txm9o1qx"
+                },
+                "comment": {
+                    "type": "string",
+                    "example": "This is just to confirm that comment works"
+                },
+                "comment_parent": {
+                    "type": "string",
+                    "example": null
+                },
+                "created_at": {
+                    "type": "string",
+                    "example": "2022-03-30T14:54:18.000000Z"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "example": "2022-03-30T14:54:18.000000Z"
+                }
+            }
+        },
+        "PostComment": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Comment saved successfully"
+                }
+            }
+        },
+        "PutComment": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Comment edited successfully"
+                }
+            }
+        },
+        "DeleteComment": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string",
+                    "example": "success"
+                },
+                "message": {
+                    "type": "string",
+                    "example": "Comment deleted successfully"
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "Find out more Joseph",
+        "url": "http://github.com/optimalresource"
     }
-  },
-  "host": "ec2-13-246-17-45.af-south-1.compute.amazonaws.com",
-  "basePath": "/api/v1",
-  "tags": [
-    {
-      "name": "books",
-      "description": "Every books on ice and fire",
-      "externalDocs": {
-        "description": "Find out more",
-        "url": "http://landearn.com"
-      }
-    },
-    {
-      "name": "characters",
-      "description": "Every characters in books"
-    },
-    {
-      "name": "comments",
-      "description": "Comments made on books"
-    }
-  ],
-  "schemes": [
-    "http"
-  ],
-  "paths": {
-    "/books": {
-      "get": {
-        "tags": [
-          "books"
-        ],
-        "summary": "Get all books",
-        "description": "Use filters 'page' and 'pagesize' for paginated response. Also use 'name', 'fromReleaseDate' and 'toReleaseDate' to filter records. \n \n Example: /books/?page=1&pageSize=3",
-        "operationId": "getBooks",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "Page size",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "Book name (Please put exact name)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "fromReleaseDate",
-            "in": "query",
-            "description": "Book release date to filter from",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "toReleaseDate",
-            "in": "query",
-            "description": "Book release date to filter to",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/books/{id}": {
-      "get": {
-        "tags": [
-          "books"
-        ],
-        "summary": "Get a single book record",
-        "description": "This endpoint helps you get a single book details, you only need supply the id of the book to the url path",
-        "operationId": "getBook",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Book id",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/comments": {
-      "get": {
-        "tags": [
-          "comments"
-        ],
-        "summary": "Get all comments made for a book",
-        "description": "Supply the 'book_id' parameter in the url to see all comments made for a book",
-        "operationId": "getComments",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "book_id",
-            "in": "query",
-            "description": "Book id",
-            "required": true,
-            "type": "integer",
-            "collectionFormat": "multi"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "successful operation"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "comments"
-        ],
-        "summary": "Post a new comment for a book",
-        "description": "Submit a new comment using form data",
-        "operationId": "postComment",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "book_id",
-            "in": "formData",
-            "description": "ID of book that owns the comment",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "comment",
-            "in": "formData",
-            "description": "Comment made by anonymous user",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "comment_parent",
-            "in": "formData",
-            "description": "ID of the parent comment for replies under a comment",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/comments/{id}": {
-      "get": {
-        "tags": [
-          "comments"
-        ],
-        "summary": "Get a single comment",
-        "description": "This endpoint helps you get a single comment details, you only need supply the id of the comment to the url path",
-        "operationId": "getComment",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Comment ID",
-            "required": true,
-            "type": "integer"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "comments"
-        ],
-        "summary": "Edit a comment",
-        "description": "Edit an existing comment using form data",
-        "operationId": "editComment",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Comment ID",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "comment",
-            "in": "formData",
-            "description": "Edited Comment made by anonymous user",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "comments"
-        ],
-        "summary": "Delete a comment",
-        "description": "Delete an existing comment using form data",
-        "operationId": "deleteComment",
-        "produces": [
-          "application/xml",
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Comment ID",
-            "required": true,
-            "type": "integer",
-            "format": "int64"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response"
-          },
-          "400": {
-            "description": "Bad request"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/characters": {
-      "get": {
-        "tags": [
-          "characters"
-        ],
-        "summary": "Get all characters",
-        "description": "Use filters 'page' and 'pagesize' for paginated response. Also use 'name', 'gender', 'age' to filter your resonse and 'order' paramter with values 'asc' or 'desc' to sort the characters. \n \n Example: /characters/?order=asc \n \n The sort is done using the names of the characters",
-        "operationId": "getCharacters",
-        "consumes": [
-          "application/json"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "pageSize",
-            "in": "query",
-            "description": "Page size",
-            "required": false,
-            "type": "integer",
-            "format": "int64"
-          },
-          {
-            "name": "name",
-            "in": "query",
-            "description": "Character name (Please put exact name)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "gender",
-            "in": "query",
-            "description": "Character gender (Male or Female)",
-            "required": false,
-            "type": "string"
-          },
-          {
-            "name": "order",
-            "in": "query",
-            "description": "Order of sorting (asc or desc)",
-            "required": false,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful operation"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    }
-  },
-  "externalDocs": {
-    "description": "Find out more Joseph",
-    "url": "http://github.com/optimalresource"
-  }
 }
