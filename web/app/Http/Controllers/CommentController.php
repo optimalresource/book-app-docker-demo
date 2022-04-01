@@ -34,7 +34,7 @@ class CommentController extends Controller
             $book_id = strip_tags($book_id);
             $comments = Comment::where('book_id', '=', $book_id)->get();
 
-            return response($comments);
+            return $comments;
         }catch (\Exception $e) {
             return response("A server error occured", 500);
         }
