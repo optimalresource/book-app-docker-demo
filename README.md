@@ -6,7 +6,13 @@ The following technologies were used; - API endpoints are built using Laravel/Lu
 
 Services to be added: - Rabbitmq - Redis
 
-To launch the docker service - Edit the sample.docker-compose.yml file and put the MySQL configuration of your choice. - Go to /web root and add a .env file with the primary Lumen environment configuration and change the MySQL details to match the one in the docker-compose file you configured earlier. - Go to /conf root and create an nginx.conf file and copy the sample.nginx.conf details into your new file, add more configurations as necessary for your server, such as reverse proxy, ssl and so on. - Open terminal and cd to the root of this project, then run "docker-compose up" to see the way the application images are pulled and server started. Check out for possible errors. Subsequently, simply run "docker-compose up --detach" so you can continue running scripts on the same terminal. - To stop the service, run "docker-compose stop" - To restart the already created service, run "docker-compose start"
+To launch the docker service
+- Edit the sample.docker-compose.yml file and put the MySQL configuration of your choice.
+- Go to /web root and add a .env file with the primary Lumen environment configuration and change the MySQL details to match the one in the docker-compose.yml file you configured earlier. 
+- Go to /conf root and create an nginx.conf file and copy the sample.nginx.conf details into your new file, add more configurations as necessary for your server, such as reverse proxy, ssl and so on.
+- Open terminal and cd to the root of this project, then run "docker-compose up" to see the way the application images are pulled and server started. Check out for possible errors. Subsequently, simply run "docker-compose up --detach" so you can continue running scripts on the same terminal.
+- To stop the service, run "docker-compose stop"
+- To restart the already created service, run "docker-compose start"
 
 Once the app service is running, you can access the application on port 80, adjust the port as it suits you in the docker-compose file.
 
