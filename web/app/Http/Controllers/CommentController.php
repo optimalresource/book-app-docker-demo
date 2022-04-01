@@ -28,15 +28,15 @@ class CommentController extends Controller
     public static function getComments($book_id) {
         try {
             if ($book_id === null) {
-                return response('Please supply the book_id parameter, it cannot be empty or null', 400);
+                return ['status' => 'error', 'message' => 'Please supply the book_id parameter, it cannot be empty or null'];
             }
 
             $book_id = strip_tags($book_id);
             $comments = Comment::where('book_id', '=', $book_id)->get();
 
-            return $comments;
+            return ['status' => 'success', 'response' => $comments];
         }catch (\Exception $e) {
-            return response("A server error occured", 500);
+            return ['status' => 'error', 'message' => $e->getMessage()];
         }
     }
 
